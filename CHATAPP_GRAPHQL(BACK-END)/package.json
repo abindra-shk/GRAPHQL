@@ -1,0 +1,28 @@
+{
+  "name": "chatapp_graphql(back-end)",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@apollo/server": "^4.10.5",
+    "apollo-server-express": "^3.13.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "graphql": "^16.9.0",
+    "graphql-subscriptions": "^2.0.0",
+    "graphql-tag": "^2.12.6",
+    "graphql-ws": "^5.16.0",
+    "nodemon": "^3.1.4",
+    "ws": "^8.18.0"
+  }
+}
