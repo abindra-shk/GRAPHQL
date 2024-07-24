@@ -14,7 +14,6 @@ import resolvers from './resolvers.js';
 
 // Create an Express app
 const app = express();
-
 // Create an HTTP server
 const httpServer = createServer(app);
 
@@ -31,7 +30,8 @@ async function startServer() {
         async serverWillStart() {
           return {
             async drainServer() {
-              if (serverCleanup) {
+              // Ensure serverCleanup is defined before usage
+              if (typeof serverCleanup !== 'undefined') {
                 await serverCleanup.dispose();
               }
             },
@@ -50,16 +50,11 @@ async function startServer() {
   // Create a WebSocket server
   const wsServer = new WebSocketServer({
     server: httpServer,
-    path: '/subscriptions',
+    path: '/subscriptions', // Ensure this path is correct
   });
 
   // Use the WebSocket server with graphql-ws
   const serverCleanup = useServer({ schema }, wsServer);
-
-  // Add a basic route for testing
-  app.get('/', (req, res) => {
-    res.send('Hello World');
-  });
 
   // Listen on a specific port
   httpServer.listen(5000, () => {
@@ -68,7 +63,6 @@ async function startServer() {
   });
 }
 
-// Start the server
 startServer().catch((error) => {
   console.error('Failed to start the server:', error);
 });
