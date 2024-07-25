@@ -50,7 +50,7 @@ async function startServer() {
   // Create a WebSocket server
   const wsServer = new WebSocketServer({
     server: httpServer,
-    path: '/subscriptions', // Ensure this path is correct
+    path: '/graphql', // Ensure this path is correct
   });
 
   // Use the WebSocket server with graphql-ws
