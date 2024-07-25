@@ -1,4 +1,3 @@
-// src/schema.js
 import { gql } from 'graphql-tag';
 
 const typeDefs = gql`
@@ -6,18 +5,19 @@ const typeDefs = gql`
     id: ID!
     content: String!
     author: String!
+    room: String!
   }
 
   type Query {
-    messages: [Message]
+    messages(room: String!): [Message]
   }
 
   type Mutation {
-    postMessage(content: String!, author: String!): Message
+    postMessage(content: String!, author: String!, room: String!): Message
   }
 
   type Subscription {
-    messagePosted: Message
+    messagePosted(room: String!): Message
   }
 `;
 

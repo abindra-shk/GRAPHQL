@@ -57,9 +57,9 @@ async function startServer() {
   const serverCleanup = useServer({ schema }, wsServer);
 
   // Listen on a specific port
-  httpServer.listen(5000, () => {
-    console.log(`🚀 Server ready at http://localhost:5000/graphql`);
-    console.log(`💬 Subscriptions ready at ws://localhost:5000/subscriptions`);
+  httpServer.listen(5000, '0.0.0.0', () => {
+    console.log(`🚀 Server ready at http://10.0.2.153:5000/graphql`);
+    console.log(`💬 Subscriptions ready at ws://10.0.2.153:5000/subscriptions`);
   });
 }
 
