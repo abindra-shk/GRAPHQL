@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AppBar, Toolbar, Typography, Box, Paper, TextField, Button, Container } from '@mui/material';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  Paper,
+  TextField,
+  Container,
+} from '@mui/material';
+import SendIcon from '../icons/Send'; // Make sure the path is correct
 import useMessages from '../hooks/useMessages';
 import usePostMessage from '../hooks/usePostMessage';
 import useMessageSubscription from '../hooks/useMessageSubscription';
@@ -18,6 +27,13 @@ const ChatRoom: React.FC = () => {
     if (message.trim()) {
       await postMessage(message, user, room);
       setMessage('');
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleSend();
     }
   };
 
@@ -75,7 +91,7 @@ const ChatRoom: React.FC = () => {
             <Box
               sx={{
                 width: '100%',
-                height: '400px',
+                height: '350px',
                 overflowY: 'auto',
                 mb: 2,
                 backgroundColor: '#2a2d34',
@@ -88,13 +104,15 @@ const ChatRoom: React.FC = () => {
                   key={msg.id}
                   sx={{
                     display: 'flex',
-                    justifyContent: msg.author === user ? 'flex-start' : 'flex-end',
+                    justifyContent:
+                      msg.author === user ? 'flex-end' : 'flex-start',
                     mb: 1,
                   }}
                 >
                   <Box
                     sx={{
-                      backgroundColor: msg.author === user ? '#3b3e46' : '#4b4f58',
+                      backgroundColor:
+                        msg.author === user ? '#ff4c4c' : '#4b4f58',
                       color: 'white',
                       padding: 1,
                       borderRadius: '10px',
@@ -108,45 +126,59 @@ const ChatRoom: React.FC = () => {
                 </Box>
               ))}
             </Box>
-            <TextField
-              fullWidth
-              variant="outlined"
-              placeholder="Type your message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
+            <Box
               sx={{
+                display: 'flex',
+                alignItems: 'center',
+                width: '100%',
                 mb: 2,
-                backgroundColor: '#1c1f26',
-                borderRadius: '10px',
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: '#4b4f58',
-                  },
-                  '&:hover fieldset': {
-                    borderColor: '#6f737b',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#8b8e95',
-                  },
-                },
-                '& input': {
-                  color: 'white',
-                },
               }}
-              InputLabelProps={{
-                style: { color: 'white' },
-              }}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSend}
-              fullWidth
-              size="large"
-              sx={{ height: '52px' }}
             >
-              Send
-            </Button>
+              <TextField
+                fullWidth
+                variant="outlined"
+                placeholder="Type your message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={handleKeyDown} // Updated event handler
+                sx={{
+                  backgroundColor: '#1c1f26',
+                  borderRadius: '10px',
+                  height: '50px',
+                  '& .MuiOutlinedInput-root': {
+                    height: '100%',
+                    '& fieldset': {
+                      borderColor: '#4b4f58',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#6f737b',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#8b8e95',
+                    },
+                  },
+                  '& input': {
+                    color: 'white',
+                  },
+                  mr: 2,
+                }}
+                InputLabelProps={{
+                  style: { color: 'white' },
+                }}
+              />
+              <Box
+                onClick={handleSend}
+                sx={{
+                  height: '60px',
+                  minWidth: '60px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <SendIcon color="#ff4c4c" size={40} />
+              </Box>
+            </Box>
           </Box>
         </Paper>
       </Container>

@@ -1,4 +1,4 @@
-// src/index.js
+import mongoose from 'mongoose';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { makeExecutableSchema } from '@graphql-tools/schema';
@@ -11,6 +11,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import typeDefs from './schema.js';
 import resolvers from './resolvers.js';
+import 'dotenv/config';
 
 // Create an Express app
 const app = express();
@@ -21,6 +22,18 @@ const httpServer = createServer(app);
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 async function startServer() {
+  // Connect to MongoDB
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('Connected to MongoDB');
+  } catch (error) {
+    console.error('Error connecting to MongoDB:', error);
+    process.exit(1);
+  }
+
   // Create an Apollo Server instance
   const server = new ApolloServer({
     schema,
@@ -45,7 +58,17 @@ async function startServer() {
   await server.start();
 
   // Apply middleware to the Express app
-  app.use('/graphql', cors(), bodyParser.json(), expressMiddleware(server));
+  app.use(
+    '/graphql',
+    cors(),
+    bodyParser.json(),
+    expressMiddleware(server, {
+      context: async ({ req }) => {
+        const token = req.headers.authorization;
+        return { token };
+      },
+    })
+  );
 
   // Create a WebSocket server
   const wsServer = new WebSocketServer({
@@ -54,12 +77,19 @@ async function startServer() {
   });
 
   // Use the WebSocket server with graphql-ws
-  const serverCleanup = useServer({ schema }, wsServer);
+  const serverCleanup = useServer({ schema, context: async (ctx) => {
+    const token = ctx.connectionParams?.authorization;
+    if (token) {
+      const user = await AuthService.getUserFromToken(token);
+      return { user };
+    }
+    throw new Error('Missing auth token!');
+  } }, wsServer);
 
   // Listen on a specific port
   httpServer.listen(5000, '0.0.0.0', () => {
     console.log(`🚀 Server ready at http://10.0.2.153:5000/graphql`);
-    console.log(`💬 Subscriptions ready at ws://10.0.2.153:5000/subscriptions`);
+    console.log(`💬 Subscriptions ready at ws://10.0.2.153:5000/graphql`);
   });
 }
 
