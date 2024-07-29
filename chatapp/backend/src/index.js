@@ -62,6 +62,7 @@ async function startServer() {
     '/graphql',
     cors(),
     bodyParser.json(),
+    
     expressMiddleware(server, {
       context: async ({ req }) => {
         const token = req.headers.authorization;
@@ -77,19 +78,25 @@ async function startServer() {
   });
 
   // Use the WebSocket server with graphql-ws
-  const serverCleanup = useServer({ schema, context: async (ctx) => {
-    const token = ctx.connectionParams?.authorization;
-    if (token) {
-      const user = await AuthService.getUserFromToken(token);
-      return { user };
-    }
-    throw new Error('Missing auth token!');
-  } }, wsServer);
+  const serverCleanup = useServer(
+    {
+      schema,
+      // context: async (ctx) => {
+      //   const token = ctx.connectionParams?.authorization;
+      //   if (token) {
+      //     const user = await AuthService.getUserFromToken(token);
+      //     return { user };
+      //   }
+      //   throw new Error('Missing auth token!');
+      // },
+    },
+    wsServer
+  );
 
   // Listen on a specific port
-  httpServer.listen(5000, '0.0.0.0', () => {
-    console.log(`🚀 Server ready at http://10.0.2.153:5000/graphql`);
-    console.log(`💬 Subscriptions ready at ws://10.0.2.153:5000/graphql`);
+  httpServer.listen(5001, '0.0.0.0', () => {
+    console.log(`🚀 Server ready at http://10.0.2.153:5001/graphql`);
+    console.log(`💬 Subscriptions ready at ws://10.0.2.153:5001/graphql`);
   });
 }
 

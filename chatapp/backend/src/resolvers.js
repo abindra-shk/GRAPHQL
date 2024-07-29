@@ -6,9 +6,11 @@ import { PubSub } from 'graphql-subscriptions';
 import 'dotenv/config';
 import { AuthService } from './services/authService.js';
 import { getRoomName } from './utils/room.js';
+import { subscribe } from 'graphql';
 
 const pubsub = new PubSub();
 const JWT_SECRET = process.env.JWT_SECRET;
+const MESSAGE_ADDED = 'MESSAGE_ADDED';
 
 const resolvers = {
   Query: {
@@ -49,6 +51,7 @@ const resolvers = {
       pubsub.publish(`MESSAGE_POSTED_${roomName}`, {
         messagePosted: populatedMsg,
       });
+      pubsub.publish(MESSAGE_ADDED, { messageAdded: populatedMsg });
       return populatedMsg;
     },
     createUser: async (_, { username, password }) => {
@@ -71,6 +74,9 @@ const resolvers = {
     messagePosted: {
       subscribe: (_, { room }) =>
         pubsub.asyncIterator([`MESSAGE_POSTED_${room}`]),
+    },
+    messageAdded: {
+      subscribe: () => pubsub.asyncIterator(MESSAGE_ADDED),
     },
     privateMessageReceived: {
       subscribe: (_, { room }) =>

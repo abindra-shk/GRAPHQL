@@ -23,7 +23,7 @@ const typeDefs = gql`
   type Query {
     messages(room: String!): [Message]
     users: [User]
-    listPrivateMessage(receiverId:ID!):[Message]
+    listPrivateMessage(receiverId: ID!): [Message]
   }
 
   type Mutation {
@@ -34,6 +34,7 @@ const typeDefs = gql`
 
   type Subscription {
     messagePosted(room: String!): Message
+    messageAdded: Message
     privateMessageReceived(room: String!): Message
   }
 `;
