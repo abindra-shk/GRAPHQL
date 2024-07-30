@@ -66,12 +66,16 @@ interface ChatBoxProps {
 
 const ChatBox: React.FC<ChatBoxProps> = ({ selectedUser }) => {
   const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState<any[]>([]);
   const currentRoom = useSelector((state: any) => state.user.room);
   const currentUser = useSelector((state: any) => state.user.user);
 
   const { data, loading, error, refetch } = useQuery(GET_MESSAGES, {
     variables: { roomId: currentRoom },
     skip: !currentRoom,
+    onCompleted: (data) => {
+      setMessages(data.messages);
+    },
   });
 
   console.log('selected user', selectedUser);
@@ -85,11 +89,12 @@ const ChatBox: React.FC<ChatBoxProps> = ({ selectedUser }) => {
       if (!subscriptionData.data) return;
 
       const newMessage = subscriptionData.data.messagePosted;
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
       
       // Update UI with the new message
-      if (data && data.messages) {
-        data.messages.push(newMessage);
-      }
+      // if (data && data.messages) {
+      //   data.messages.push(newMessage);
+      // }
     },
   });
 
