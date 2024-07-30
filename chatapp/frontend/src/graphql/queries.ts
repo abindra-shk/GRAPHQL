@@ -11,6 +11,8 @@ export const GET_MESSAGES = gql`
   }
 `;
 
+
+
 export const POST_MESSAGE = gql`
   mutation PostMessage($content: String!, $author: String!, $room: String!) {
     postMessage(content: $content, author: $author, room: $room) {

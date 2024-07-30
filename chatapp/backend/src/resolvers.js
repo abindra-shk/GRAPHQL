@@ -14,8 +14,11 @@ const MESSAGE_ADDED = 'MESSAGE_ADDED';
 
 const resolvers = {
   Query: {
-    messages: async (_, { room }) => {
-      return Message.find({ room }).populate('author');
+    messages: async (_, { roomId }) => {
+      const messages = await Message.find({ room: roomId }).populate(
+        'sender receiver'
+      );
+      return messages;
     },
     listPrivateMessage: async (_, { receiverId }, context) => {
       const user = await AuthService.getLoggedInUser(context.token);

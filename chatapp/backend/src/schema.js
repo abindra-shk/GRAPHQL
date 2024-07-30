@@ -21,7 +21,7 @@ const typeDefs = gql`
   }
 
   type Query {
-    messages(room: String!): [Message]
+    messages(roomId: String!): [Message]
     users: [User]
     listPrivateMessage(receiverId: ID!): [Message]
   }

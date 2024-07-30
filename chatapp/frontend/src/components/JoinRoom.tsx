@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
-import { useDispatch} from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setRoom, setUser } from '../features/userSlice';
-import { TextField, Button, Box, Typography, Container, Paper } from '@mui/material';
+import { setRoom, setUser } from '../store/userSlice';
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Container,
+  Paper,
+} from '@mui/material';
 
 const JoinRoom: React.FC = () => {
   const dispatch = useDispatch();
