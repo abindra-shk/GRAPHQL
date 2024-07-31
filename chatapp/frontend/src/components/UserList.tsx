@@ -1,7 +1,7 @@
 import { useQuery, gql } from '@apollo/client';
 import { List, ListItem, ListItemText, CircularProgress } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { setRoom } from '../store/userSlice'; // Adjust the import path
+import { setRoom } from '../store/userSlice';
 import { generateRoomId } from '../utils/getRoom';
 
 const GET_USERS = gql`
@@ -19,19 +19,18 @@ interface UserListProps {
 
 const UserList: React.FC<UserListProps> = ({ onSelectUser }) => {
   const { loading, error, data } = useQuery(GET_USERS);
-  console.log('User list', data?.users);
   const dispatch = useDispatch();
   const currentUser = useSelector((state: any) => state.user.user);
-  console.log('current user', currentUser);
 
   if (loading) return <CircularProgress />;
   if (error) return <p>Error loading users</p>;
 
-  const handleUserClick = (userId:string) => {
+  const handleUserClick = (userId: string) => {
     const roomId = generateRoomId(currentUser.id, userId);
     dispatch(setRoom(roomId));
-    onSelectUser(userId)
+    onSelectUser(userId);
   };
+
   return (
     <List>
       {data?.users

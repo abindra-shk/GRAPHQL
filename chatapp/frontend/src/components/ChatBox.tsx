@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useMutation, gql, useQuery, useSubscription } from '@apollo/client';
 import { useSelector } from 'react-redux';
 import { Box, TextField, Typography, Container, Paper } from '@mui/material';
@@ -69,17 +69,16 @@ const ChatBox: React.FC<ChatBoxProps> = ({ selectedUser }) => {
   const [messages, setMessages] = useState<any[]>([]);
   const currentRoom = useSelector((state: any) => state.user.room);
   const currentUser = useSelector((state: any) => state.user.user);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  const { data, loading, error, refetch } = useQuery(GET_MESSAGES, {
+  const { loading, error, data } = useQuery(GET_MESSAGES, {
     variables: { roomId: currentRoom },
     skip: !currentRoom,
     onCompleted: (data) => {
       setMessages(data.messages);
+      scrollToBottom();
     },
   });
-
-  console.log('selected user', selectedUser);
-  console.log('current room', currentRoom);
 
   const [sendMessage] = useMutation(SEND_MESSAGE);
 
@@ -90,11 +89,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ selectedUser }) => {
 
       const newMessage = subscriptionData.data.messagePosted;
       setMessages((prevMessages) => [...prevMessages, newMessage]);
-      
-      // Update UI with the new message
-      // if (data && data.messages) {
-      //   data.messages.push(newMessage);
-      // }
+      scrollToBottom();
     },
   });
 
@@ -106,7 +101,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ selectedUser }) => {
         variables: { content: message, receiver: selectedUser },
       });
       setMessage(''); // Clear input field after sending message
-      refetch(); // Optionally refetch messages to ensure UI consistency
+      scrollToBottom();
     } catch (error) {
       console.error('Error sending message:', error);
     }
@@ -118,6 +113,16 @@ const ChatBox: React.FC<ChatBoxProps> = ({ selectedUser }) => {
     }
   };
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    if (currentRoom) {
+      scrollToBottom();
+    }
+  }, [currentRoom]);
+
   if (!currentRoom)
     return <Typography>Select a user to start chatting</Typography>;
   if (loading) return <Typography>Loading messages...</Typography>;
@@ -125,13 +130,14 @@ const ChatBox: React.FC<ChatBoxProps> = ({ selectedUser }) => {
 
   return (
     <Container
-      maxWidth="sm"
+      // maxWidth="lg"
       sx={{
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        minHeight: '100vh',
+        // minHeight: '100vh',
+        height:'650px'
       }}
     >
       <Paper
@@ -167,7 +173,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ selectedUser }) => {
               borderRadius: '10px',
             }}
           >
-            {data.messages.map((msg: any) => (
+            {messages.map((msg: any) => (
               <Box
                 key={msg.id}
                 sx={{
@@ -195,6 +201,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ selectedUser }) => {
                 </Box>
               </Box>
             ))}
+            <div ref={messagesEndRef} />
           </Box>
           <Box
             sx={{
@@ -210,7 +217,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ selectedUser }) => {
               placeholder="Type your message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={handleKeyDown} // Updated event handler
+              onKeyDown={handleKeyDown}
               sx={{
                 backgroundColor: '#1c1f26',
                 borderRadius: '10px',

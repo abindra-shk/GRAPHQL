@@ -7,12 +7,14 @@ const ChatPage = () => {
   const [selectedUser, setSelectedUser] = useState('');
 
   return (
-    <Grid container spacing={3} sx={{ height: '100vh', padding: 3 }}>
+    <Grid container spacing={3} sx={{ padding: 3 }}>
       <Grid item xs={3}>
         <Paper
           elevation={3}
           sx={{
-            height: '100%',
+            height: '500px',
+            display:'flex',
+            // alignItems:'center',
             overflowY: 'auto',
             padding: 2,
             borderRadius: '10px',
